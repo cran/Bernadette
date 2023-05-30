@@ -1,7 +1,7 @@
 Type: Package
 Package: Bernadette
 Title: Bayesian Inference and Model Selection for Stochastic Epidemics
-Version: 1.1.2
+Version: 1.1.3
 Authors@R: 
     c(person(given   = "Lampros", 
              family  = "Bouranis", 
@@ -34,7 +34,7 @@ LazyDataCompression: xz
 RoxygenNote: 7.2.3
 SystemRequirements: GNU make
 NeedsCompilation: yes
-Packaged: 2023-05-25 11:35:52 UTC; lbour
+Packaged: 2023-05-29 13:45:42 UTC; lbour
 Author: Lampros Bouranis [aut, cre, cph]
     (<https://orcid.org/0000-0002-1291-2192>),
   European Union [fnd] (Funding by the European Union's Horizon 2020
@@ -42,4 +42,4 @@ Author: Lampros Bouranis [aut, cre, cph]
     grant agreement No 101027218.)
 Maintainer: Lampros Bouranis <bernadette.aueb@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-05-25 12:40:02 UTC
+Date/Publication: 2023-05-30 08:50:16 UTC
