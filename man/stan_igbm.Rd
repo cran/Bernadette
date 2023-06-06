@@ -14,7 +14,9 @@ stan_igbm(
   incubation_period = 3,
   infectious_period = 4,
   likelihood_variance_type = c("quadratic", "linear"),
+  ecr_changes = 1,
   prior_scale_x0 = 1,
+  prior_scale_x1 = 1,
   prior_scale_contactmatrix = 0.05,
   pi_perc = 0.1,
   prior_volatility = normal(location = 0, scale = 2.5),
@@ -69,8 +71,14 @@ length of infectious period in days. Must be >=1.}
 If \eqn{0}, the variance of the over-dispersed count model is a quadratic function of the mean;
 if \eqn{1}, the variance of the over-dispersed count model is a linear function of the mean.}
 
+\item{ecr_changes}{integer;
+between 1 and 7, defaults to 1. Expresses the number of changes of the effective contact rate during the course of 7 days.}
+
 \item{prior_scale_x0}{double;
 scale parameter of a Normal prior distribution assigned to the age-specific log(transmissibility) at time \eqn{t = 0}.}
+
+\item{prior_scale_x1}{double;
+scale parameter of a Normal prior distribution assigned to the age-specific log(transmissibility) at time \eqn{t = 1}.}
 
 \item{prior_scale_contactmatrix}{double;
 defaults to 0.05. A positive number that scales the informative Normal prior distribution assigned to the random contact matrix.}
@@ -143,7 +151,7 @@ age group alpha' The \code{stan_igbm} function calls the workhorse
 \donttest{
 # Age-specific mortality/incidence count time series:
 data(age_specific_mortality_counts)
-data(age_specific_infection_counts)
+data(age_specific_cusum_infection_counts)
 
 # Import the age distribution for Greece in 2020:
 age_distr <- age_distribution(country = "Greece", year = 2020)
@@ -166,7 +174,7 @@ aggr_cm <- aggregate_contact_matrix(conmat, lookup_table, aggr_age)
 # Aggregate the IFR:
 ifr_mapping <- c(rep("0-39", 8), rep("40-64", 5), rep("65+", 3))
 
-aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_infection_counts)
+aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_cusum_infection_counts)
 
 # Infection-to-death distribution:
 ditd <- itd_distribution(ts_length  = nrow(age_specific_mortality_counts),
@@ -175,8 +183,8 @@ ditd <- itd_distribution(ts_length  = nrow(age_specific_mortality_counts),
 
 # Posterior sampling:
 
-rstan_options(auto_write = TRUE)
-chains <- 2
+rstan::rstan_options(auto_write = TRUE)
+chains <- 1
 options(mc.cores = chains)
 
 igbm_fit <- stan_igbm(y_data                      = age_specific_mortality_counts,
@@ -187,21 +195,23 @@ igbm_fit <- stan_igbm(y_data                      = age_specific_mortality_count
                       incubation_period           = 3,
                       infectious_period           = 4,
                       likelihood_variance_type    = "linear",
-                      prior_scale_x0              = 0.5,
+                      ecr_changes                 = 7,
+                      prior_scale_x0              = 1,
+                      prior_scale_x1              = 1,
                       prior_scale_contactmatrix   = 0.05,
                       pi_perc                     = 0.1,
                       prior_volatility            = normal(location = 0, scale = 1),
                       prior_nb_dispersion         = exponential(rate = 1/5),
                       algorithm_inference         = "sampling",
-                      nBurn                       = 5,
-                      nPost                       = 10,
+                      nBurn                       = 10,
+                      nPost                       = 30,
                       nThin                       = 1,
                       chains                      = chains,
-                      adapt_delta                 = 0.8,
-                      max_treedepth               = 16,
+                      adapt_delta                 = 0.6,
+                      max_treedepth               = 14,
                       seed                        = 1)
 
-summary(igbm_fit)
+# print_summary <- summary(object = igbm_fit, y_data = age_specific_mortality_counts)$summary
 }
 }
 \references{

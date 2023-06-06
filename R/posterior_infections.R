@@ -15,9 +15,9 @@
 #' \donttest{
 #' # Age-specific mortality/incidence count time series:
 #' data(age_specific_mortality_counts)
-#' data(age_specific_infection_counts)
+#' data(age_specific_cusum_infection_counts)
 #'
-#' # Import the age distribution for a country in a given year:
+#' # Import the age distribution for Greece in 2020:
 #' age_distr <- age_distribution(country = "Greece", year = 2020)
 #'
 #' # Lookup table:
@@ -29,7 +29,7 @@
 #' # Aggregate the age distribution table:
 #' aggr_age <- aggregate_age_distribution(age_distr, lookup_table)
 #'
-#' # Import the projected contact matrix for a country (i.e. Greece):
+#' # Import the projected contact matrix for Greece:
 #' conmat <- contact_matrix(country = "GRC")
 #'
 #' # Aggregate the contact matrix:
@@ -38,7 +38,7 @@
 #' # Aggregate the IFR:
 #' ifr_mapping <- c(rep("0-39", 8), rep("40-64", 5), rep("65+", 3))
 #'
-#' aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_infection_counts)
+#' aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_cusum_infection_counts)
 #'
 #' # Infection-to-death distribution:
 #' ditd <- itd_distribution(ts_length  = nrow(age_specific_mortality_counts),
@@ -47,8 +47,8 @@
 #'
 #' # Posterior sampling:
 #'
-#' rstan_options(auto_write = TRUE)
-#' chains <- 2
+#' rstan::rstan_options(auto_write = TRUE)
+#' chains <- 1
 #' options(mc.cores = chains)
 #'
 #' igbm_fit <- stan_igbm(y_data                      = age_specific_mortality_counts,
@@ -59,18 +59,20 @@
 #'                       incubation_period           = 3,
 #'                       infectious_period           = 4,
 #'                       likelihood_variance_type    = "linear",
-#'                       prior_scale_x0              = 0.5,
+#'                       ecr_changes                 = 7,
+#'                       prior_scale_x0              = 1,
+#'                       prior_scale_x1              = 1,
 #'                       prior_scale_contactmatrix   = 0.05,
 #'                       pi_perc                     = 0.1,
 #'                       prior_volatility            = normal(location = 0, scale = 1),
 #'                       prior_nb_dispersion         = exponential(rate = 1/5),
 #'                       algorithm_inference         = "sampling",
-#'                       nBurn                       = 5,
-#'                       nPost                       = 10,
+#'                       nBurn                       = 10,
+#'                       nPost                       = 30,
 #'                       nThin                       = 1,
 #'                       chains                      = chains,
-#'                       adapt_delta                 = 0.8,
-#'                       max_treedepth               = 16,
+#'                       adapt_delta                 = 0.6,
+#'                       max_treedepth               = 14,
 #'                       seed                        = 1)
 #'
 #' post_inf_summary <- posterior_infections(object = igbm_fit,
@@ -146,7 +148,7 @@ posterior_infections <- function(object, y_data){
 #' @param ylab character;
 #' title of y-axis.
 #'
-#' @param ... Optional arguments passed to \code{\link[ggplot2]{facet_wrap}}, \code{\link[ggplot2]{scale_x_date}} and \code{\link[ggplot2]{theme}}.
+#' @param ... Optional arguments passed to \code{\link[ggplot2]{scale_x_date}}.
 #'
 #' @return A \code{ggplot} object which can be further customised using the \pkg{ggplot2} package.
 #'
@@ -156,9 +158,9 @@ posterior_infections <- function(object, y_data){
 #' \donttest{
 #' # Age-specific mortality/incidence count time series:
 #' data(age_specific_mortality_counts)
-#' data(age_specific_infection_counts)
+#' data(age_specific_cusum_infection_counts)
 #'
-#' # Import the age distribution for a country in a given year:
+#' # Import the age distribution for Greece in 2020:
 #' age_distr <- age_distribution(country = "Greece", year = 2020)
 #'
 #' # Lookup table:
@@ -170,7 +172,7 @@ posterior_infections <- function(object, y_data){
 #' # Aggregate the age distribution table:
 #' aggr_age <- aggregate_age_distribution(age_distr, lookup_table)
 #'
-#' # Import the projected contact matrix for a country (i.e. Greece):
+#' # Import the projected contact matrix for Greece:
 #' conmat <- contact_matrix(country = "GRC")
 #'
 #' # Aggregate the contact matrix:
@@ -179,7 +181,7 @@ posterior_infections <- function(object, y_data){
 #' # Aggregate the IFR:
 #' ifr_mapping <- c(rep("0-39", 8), rep("40-64", 5), rep("65+", 3))
 #'
-#' aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_infection_counts)
+#' aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_cusum_infection_counts)
 #'
 #' # Infection-to-death distribution:
 #' ditd <- itd_distribution(ts_length  = nrow(age_specific_mortality_counts),
@@ -188,8 +190,8 @@ posterior_infections <- function(object, y_data){
 #'
 #' # Posterior sampling:
 #'
-#' rstan_options(auto_write = TRUE)
-#' chains <- 2
+#' rstan::rstan_options(auto_write = TRUE)
+#' chains <- 1
 #' options(mc.cores = chains)
 #'
 #' igbm_fit <- stan_igbm(y_data                      = age_specific_mortality_counts,
@@ -200,18 +202,20 @@ posterior_infections <- function(object, y_data){
 #'                       incubation_period           = 3,
 #'                       infectious_period           = 4,
 #'                       likelihood_variance_type    = "linear",
-#'                       prior_scale_x0              = 0.5,
+#'                       ecr_changes                 = 7,
+#'                       prior_scale_x0              = 1,
+#'                       prior_scale_x1              = 1,
 #'                       prior_scale_contactmatrix   = 0.05,
 #'                       pi_perc                     = 0.1,
 #'                       prior_volatility            = normal(location = 0, scale = 1),
 #'                       prior_nb_dispersion         = exponential(rate = 1/5),
 #'                       algorithm_inference         = "sampling",
-#'                       nBurn                       = 5,
-#'                       nPost                       = 10,
+#'                       nBurn                       = 10,
+#'                       nPost                       = 30,
 #'                       nThin                       = 1,
 #'                       chains                      = chains,
-#'                       adapt_delta                 = 0.8,
-#'                       max_treedepth               = 16,
+#'                       adapt_delta                 = 0.6,
+#'                       max_treedepth               = 14,
 #'                       seed                        = 1)
 #'
 #' post_inf_summary <- posterior_infections(object = igbm_fit,
@@ -242,7 +246,7 @@ plot_posterior_infections <- function(object,
 
     ret <-
       ggplot2::ggplot(object$Age_specific) +
-      ggplot2::facet_wrap(. ~ Group, ...) +
+      ggplot2::facet_wrap(. ~ Group, scales = "free_y") +
       ggplot2::geom_line(ggplot2::aes(x     = Date,
                                       y     = median,
                                       color = "Median"),
@@ -252,19 +256,20 @@ plot_posterior_infections <- function(object,
                                         ymax = high75,
                                         fill = "50% CrI"),
                            alpha = 0.5) +
-      ggplot2::geom_ribbon(ggplot2::aes(x    = Date,
-                                        ymin = low,
-                                        ymax = high,
-                                        fill = "95% CrI"),
-                           alpha = 0.5) +
+      # ggplot2::geom_ribbon(ggplot2::aes(x    = Date,
+      #                                   ymin = low,
+      #                                   ymax = high,
+      #                                   fill = "95% CrI"),
+      #                      alpha = 0.5) +
       ggplot2::labs(x = xlab, y = ylab) +
       ggplot2::scale_x_date(...) +
-      ggplot2::scale_fill_manual(values = c("50% CrI" = "gray70", "95% CrI" = "gray40")) +
+      ggplot2::scale_fill_manual(values = c("50% CrI" = "gray70"#,
+                                            #"95% CrI" = "gray40"
+                                              )) +
       ggplot2::scale_colour_manual(name = '', values = c('Median' = "black")) +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "bottom",
-                     legend.title    = ggplot2::element_blank(),
-                     ...)
+                     legend.title    = ggplot2::element_blank())
 
   } else if (aggr_type == "aggregated"){
 
@@ -279,19 +284,20 @@ plot_posterior_infections <- function(object,
                                           ymax = high75,
                                           fill = "50% CrI"),
                                       alpha = 0.5) +
-        ggplot2::geom_ribbon(ggplot2::aes(x    = Date,
-                                          ymin = low,
-                                          ymax = high,
-                                          fill = "95% CrI"),
-                                      alpha = 0.5) +
+        # ggplot2::geom_ribbon(ggplot2::aes(x    = Date,
+        #                                   ymin = low,
+        #                                   ymax = high,
+        #                                   fill = "95% CrI"),
+        #                               alpha = 0.5) +
         ggplot2::labs(x = xlab, y = ylab) +
         ggplot2::scale_x_date(...) +
-        ggplot2::scale_fill_manual(values = c("50% CrI" = "gray70", "95% CrI" = "gray40")) +
+        ggplot2::scale_fill_manual(values = c("50% CrI" = "gray70"#,
+                                              #"95% CrI" = "gray40"
+                                                )) +
         ggplot2::scale_colour_manual(name = '', values = c('Median' = "black")) +
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "bottom",
-                       legend.title    = ggplot2::element_blank(),
-                       ...)
+                       legend.title    = ggplot2::element_blank())
   }
 
   ret

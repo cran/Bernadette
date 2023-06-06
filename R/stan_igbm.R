@@ -33,8 +33,14 @@
 #' If \eqn{0}, the variance of the over-dispersed count model is a quadratic function of the mean;
 #' if \eqn{1}, the variance of the over-dispersed count model is a linear function of the mean.
 #'
+#' @param ecr_changes integer;
+#' between 1 and 7, defaults to 1. Expresses the number of changes of the effective contact rate during the course of 7 days.
+#'
 #' @param prior_scale_x0 double;
 #' scale parameter of a Normal prior distribution assigned to the age-specific log(transmissibility) at time \eqn{t = 0}.
+#'
+#' @param prior_scale_x1 double;
+#' scale parameter of a Normal prior distribution assigned to the age-specific log(transmissibility) at time \eqn{t = 1}.
 #'
 #' @param prior_scale_contactmatrix double;
 #' defaults to 0.05. A positive number that scales the informative Normal prior distribution assigned to the random contact matrix.
@@ -97,7 +103,7 @@
 #' \donttest{
 #' # Age-specific mortality/incidence count time series:
 #' data(age_specific_mortality_counts)
-#' data(age_specific_infection_counts)
+#' data(age_specific_cusum_infection_counts)
 #'
 #' # Import the age distribution for Greece in 2020:
 #' age_distr <- age_distribution(country = "Greece", year = 2020)
@@ -120,7 +126,7 @@
 #' # Aggregate the IFR:
 #' ifr_mapping <- c(rep("0-39", 8), rep("40-64", 5), rep("65+", 3))
 #'
-#' aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_infection_counts)
+#' aggr_age_ifr <- aggregate_ifr_react(age_distr, ifr_mapping, age_specific_cusum_infection_counts)
 #'
 #' # Infection-to-death distribution:
 #' ditd <- itd_distribution(ts_length  = nrow(age_specific_mortality_counts),
@@ -129,8 +135,8 @@
 #'
 #' # Posterior sampling:
 #'
-#' rstan_options(auto_write = TRUE)
-#' chains <- 2
+#' rstan::rstan_options(auto_write = TRUE)
+#' chains <- 1
 #' options(mc.cores = chains)
 #'
 #' igbm_fit <- stan_igbm(y_data                      = age_specific_mortality_counts,
@@ -141,21 +147,23 @@
 #'                       incubation_period           = 3,
 #'                       infectious_period           = 4,
 #'                       likelihood_variance_type    = "linear",
-#'                       prior_scale_x0              = 0.5,
+#'                       ecr_changes                 = 7,
+#'                       prior_scale_x0              = 1,
+#'                       prior_scale_x1              = 1,
 #'                       prior_scale_contactmatrix   = 0.05,
 #'                       pi_perc                     = 0.1,
 #'                       prior_volatility            = normal(location = 0, scale = 1),
 #'                       prior_nb_dispersion         = exponential(rate = 1/5),
 #'                       algorithm_inference         = "sampling",
-#'                       nBurn                       = 5,
-#'                       nPost                       = 10,
+#'                       nBurn                       = 10,
+#'                       nPost                       = 30,
 #'                       nThin                       = 1,
 #'                       chains                      = chains,
-#'                       adapt_delta                 = 0.8,
-#'                       max_treedepth               = 16,
+#'                       adapt_delta                 = 0.6,
+#'                       max_treedepth               = 14,
 #'                       seed                        = 1)
 #'
-#' summary(igbm_fit)
+#' # print_summary <- summary(object = igbm_fit, y_data = age_specific_mortality_counts)$summary
 #'}
 #' @export
 #'
@@ -168,7 +176,9 @@ stan_igbm <-
            incubation_period         = 3,
            infectious_period         = 4,
            likelihood_variance_type  = c("quadratic", "linear"),
+           ecr_changes               = 1,
            prior_scale_x0            = 1,
+           prior_scale_x1            = 1,
            prior_scale_contactmatrix = 0.05,
            pi_perc             = 0.1,   # Assume that 10% of each age group are Exposed, rest 90% are Susceptible
            prior_volatility    = normal(location = 0, scale = 2.5),
@@ -219,6 +229,9 @@ stan_igbm <-
     if( pi_perc > 1 )
       stop("'pi_perc' must be between 0 and 1.")
 
+    if( (ecr_changes > 7) | (ecr_changes < 1) )
+        stop("'ecr_changes' must be between 1 and 7.")
+
     pi_prior_params          <- lapply(pi_perc, function(x) estBetaParams(x, (0.05*x)) )
     algorithm_inference      <- match.arg(algorithm_inference)
     likelihood_variance_type <- match.arg(likelihood_variance_type)
@@ -233,6 +246,7 @@ stan_igbm <-
             n_pop              = sum(age_distribution_population$PopTotal),
             age_dist           = age_distribution_population$PopTotal/sum(age_distribution_population$PopTotal),
             pop_diag           = 1/(age_distribution_population$PopTotal),
+            ecr_changes        = ecr_changes,
             n_difeq            = length(c("S", "E", "E", "I", "I", "C")),
             L_cm               = t( base::chol( base::diag(age_distribution_population$PopTotal) %*% as.matrix(contact_matrix) ) ),
             age_specific_ifr   = age_specific_ifr[,-1], # Remove the Date column
@@ -245,6 +259,7 @@ stan_igbm <-
             incubation_period  = incubation_period,
             infectious_period  = infectious_period,
             prior_scale_x0     = prior_scale_x0,
+            prior_scale_x1     = prior_scale_x1,
             prior_dist_pi      = data.frame(do.call(rbind, pi_prior_params)),
             likelihood_variance_type  = l_variance_type,
             prior_scale_contactmatrix = prior_scale_contactmatrix
