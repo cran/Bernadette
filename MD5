@@ -1,6 +1,6 @@
-aaf2f817590977eaa27260dc24b3c064 *DESCRIPTION
-3e3eb40461dd700c99760bbc683e0dd9 *NAMESPACE
-e371b0a06e4b2ea3a347cf0b5034adde *R/Bernadette-package.R
+4d6567f91e4aed6a2dbc77da311b1365 *DESCRIPTION
+ad4e5f0e706c96097ea4fbcbb4599499 *NAMESPACE
+e5367d4e1ca4025494bd05b7fd74a46e *R/Bernadette-package.R
 a643dfcf3fb32b384691e205636ab727 *R/age_distribution.R
 864f80c6f9474b382f9d55d10f209a47 *R/aggregate_age_distribution.R
 414ad2748f0114fe7b2881cb1d3d86e3 *R/aggregate_contact_matrix.R
@@ -9,7 +9,7 @@ fe3ceb17a401499457211c7477a97310 *R/contact_matrix.R
 7e9a7efe2297fc1bef7c0d721a94f11e *R/countries_contact_matrix.R
 2c1d640bf50b80e8c5682e81c3df669b *R/countries_un.R
 2d066d019205f85e35749111b88d5f2f *R/data.R
-13c7f88b2abfaacc7d8b01eccbc8eea4 *R/globals.R
+90501a5a58182c3616aa6e27899be282 *R/globals.R
 8eb973adeb8b28dc604cca4998fb7fc5 *R/infection_to_death.R
 274e3107748d4e10840bc3457557da7c *R/misc.R
 82e2438b2900ee09df27b997923d86ac *R/plot_age_distribution.R
@@ -19,7 +19,7 @@ b1a08e24b3999f18f65aca83f7b72086 *R/plot_contact_matrix.R
 32591114e8e132e869fe62582dfcfe0b *R/posterior_mortality.R
 30a5a5b957474b702394c9333077ba61 *R/posterior_rt.R
 9882416f108996025beb60e70dd4ba0a *R/posterior_transmrate.R
-2ae6edf70e3467a21036b46feb3fe21c *R/priors.R
+9adcc42e0e36e35966af4e71c9dc73f3 *R/priors.R
 f6722f8292eb564f2e1b83322fcb2ac8 *R/stan_igbm.R
 7874ed5f05a5351b561ade729530dd61 *R/stan_igbm.fit.R
 016b34842d35875d70be1e0a7ad66cc7 *R/stanmodels.R
@@ -34,9 +34,9 @@ a2fd0a49d951f186e6fa3c08b0bb6f97 *data/age_specific_mortality_counts.rda
 d3049c807dfce6e9671353eabcc3cac7 *data/contact_matrices.rda
 3bc12498f62479639fa6b0cef2be07a0 *inst/doc/Bernadette.R
 d1c5793f00df6de48a3127b15e1e9c9d *inst/doc/Bernadette.Rmd
-0c417c7c574b26006258932c5b88afd9 *inst/doc/Bernadette.html
+21d7da177323a2e2309f1a227f0b6f07 *inst/doc/Bernadette.html
 855c064dbf8deaff96c8dc8a87169109 *inst/include/stan_meta_header.hpp
-9a988a397274e2318cb2d2027dca4e5b *inst/stan/igbm.stan
+ecdfef147381105e29343834a82ae774 *inst/stan/igbm.stan
 52e69df1b672ecee3ba750815f824020 *man/Bernadette-package.Rd
 85e092b6ba5bb0b642fe05743e613926 *man/age_distribution.Rd
 e6958d20dba11a8c68806c961221ff3f *man/age_specific_cusum_infection_counts.Rd
@@ -68,5 +68,5 @@ e9f8173519a1c4df35524dee3e1ffa19 *src/Makevars.txt
 457929755cc1db9abe969d16b0006005 *src/Makevars.win
 d70397187a26b7a243cb3f718c905a1a *src/RcppExports.cpp
 53c91045ddce598045e7819a71b5bfe6 *src/stanExports_igbm.cc
-c603450218503193f6fd178e5a29cee9 *src/stanExports_igbm.h
+5a847b97af58cb85148e6f9aed6320f1 *src/stanExports_igbm.h
 d1c5793f00df6de48a3127b15e1e9c9d *vignettes/Bernadette.Rmd
