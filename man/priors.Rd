@@ -27,7 +27,8 @@ median. The default value is \eqn{0}.}
 
 \item{scale}{Prior scale. The default depends on the family (see \strong{Details}).}
 
-\item{df}{Degrees of freedom.}
+\item{df}{Degrees of freedom. The default is \eqn{1} for
+\code{student_t}, in which case it is equivalent to \code{cauchy}.}
 
 \item{shape}{Prior shape for the gamma distribution. Defaults to \code{2}.}
 

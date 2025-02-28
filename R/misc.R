@@ -80,11 +80,15 @@ default_stan_control <- function(adapt_delta   = NULL,
   nlist(adapt_delta, max_treedepth)
 }
 
-
 # Test if an object is a stanigbm object
 #
 # @param x The object to test.
 is.stanigbm <- function(x) inherits(x, "stanigbm")
+
+# Test if an object is a stanxgbm object
+#
+# @param x The object to test.
+is.stanxgbm <- function(x) inherits(x, "stanxgbm")
 
 # Throw error if object isn't a stanreg object
 #
@@ -92,6 +96,14 @@ is.stanigbm <- function(x) inherits(x, "stanigbm")
 validate_stanigbm_object <- function(x, call. = FALSE) {
   if (!is.stanigbm(x))
     stop("Object is not a stanigbm object.", call. = call.)
+}
+
+# Throw error if object isn't a stanreg object
+#
+# @param x The object to test.
+validate_stanxgbm_object <- function(x, call. = FALSE) {
+  if (!is.stanxgbm(x))
+    stop("Object is not a stanxgbm object.", call. = call.)
 }
 
 # Check that a stanfit object (or list returned by rstan::optimizing) is valid

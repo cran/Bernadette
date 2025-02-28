@@ -13,11 +13,11 @@
 #' @export
 #'
 country_contact_matrices <- function() {
-  tmp_env <- new.env()
+  tmp_env <- environment()# new.env()
 
   utils::data(contact_matrices, envir = tmp_env)
 
-  out              <- tmp_env$contact_matrices
+  out              <- tmp_env$contact_matrices #Bernadette:::contact_matrices
   country_initials <- names(out)
 
   return (country_initials)
